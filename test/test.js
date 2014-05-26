@@ -2087,6 +2087,67 @@ exports['filter - GeneratorStream'] = function (test) {
     });
 };
 
+exports['split'] = function (test) {
+    test.expect(6);
+    function isEven(x) {
+        return x % 2 === 0;
+    }
+    _.split(isEven, [1, 2, 8, 10, 3, 4]).toArray(function (xs) {
+        test.same(xs, [[1], [3]]);
+    });
+
+    _.split(isEven, [1, 3, 4]).toArray(function (xs) {
+        test.same(xs, [[1,3]]);
+    });
+
+    _.split(isEven, [2, 1, 3]).toArray(function (xs) {
+        test.same(xs, [[1,3]]);
+    });
+
+    _.split(isEven, [1, 3]).toArray(function (xs) {
+        test.same(xs, [[1,3]]);
+    });
+
+    _.split(isEven, [2, 4]).toArray(function (xs) {
+        test.same(xs, []);
+    });
+
+    // partial application
+    _.split(isEven)([1, 2, 3, 4]).toArray(function (xs) {
+        test.same(xs, [[1], [3]]);
+    });
+    test.done();
+};
+
+exports['split - ArrayStream'] = function (test) {
+    function isEven(x) {
+        return x % 2 === 0;
+    }
+    _([1, 2, 3, 4]).split(isEven).toArray(function (xs) {
+        test.same(xs, [[1], [3]]);
+        test.done();
+    });
+};
+
+exports['split - GeneratorStream'] = function (test) {
+    function isEven(x) {
+        return x % 2 === 0;
+    }
+    var s = _(function (push, next) {
+        push(null, 1);
+        push(null, 2);
+        setTimeout(function () {
+            push(null, 3);
+            push(null, 4);
+            push(null, _.nil);
+        }, 10);
+    });
+    s.split(isEven).toArray(function (xs) {
+        test.same(xs, [[1], [3]]);
+        test.done();
+    });
+};
+
 exports['flatFilter'] = function (test) {
     var f = function (x) {
         return _([x % 2 === 0]);
