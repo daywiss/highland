@@ -2557,6 +2557,93 @@ exports['batch - GeneratorStream'] = function (test) {
     });
 }
 
+exports['window'] = function (test) {
+    test.expect(7);
+    _.window(3, [1,2,3,4,5,6,7,8,9,0]).toArray(function (xs) {
+        test.same(xs, [[1,2,3], [2,3,4], [3,4,5],
+                       [4,5,6], [5,6,7], [6,7,8],
+                       [7,8,9], [8,9,0]]);
+    });
+
+    _.window(4, [1,2,3]).toArray(function (xs) {
+        test.same(xs, [[1,2,3]]);
+    });
+
+    _.window(3, [1,2,3]).toArray(function (xs) {
+        test.same(xs, [[1,2,3]]);
+    });
+
+    _.window(2, [1,2,3]).toArray(function (xs) {
+        test.same(xs, [[1,2],[2,3]]);
+    });
+
+    _.window(1, [1,2,3]).toArray(function (xs) {
+        test.same(xs, [[1],[2],[3]]);
+    });
+
+    _.window(0, [1,2,3]).toArray(function (xs) {
+        test.same(xs, []);
+    });
+
+    _.window(1,[]).toArray(function (xs) {
+        test.same(xs, []);
+    });
+
+    test.done();
+};
+
+exports['window - ArrayStream'] = function (test) {
+    test.expect(7);
+    _([1,2,3,4,5,6,7,8,9,0]).window(3).toArray(function (xs) {
+        test.same(xs, [[1,2,3], [2,3,4], [3,4,5],
+                       [4,5,6], [5,6,7], [6,7,8],
+                       [7,8,9], [8,9,0]]);
+    });
+
+    _([1,2,3]).window(4).toArray(function (xs) {
+        test.same(xs, [[1,2,3]]);
+    });
+
+    _([1,2,3]).window(3).toArray(function (xs) {
+        test.same(xs, [[1,2,3]]);
+    });
+
+    _([1,2,3]).window(2).toArray(function (xs) {
+        test.same(xs, [[1,2],[2,3]]);
+    });
+
+    _([1,2,3]).window(1).toArray(function (xs) {
+        test.same(xs, [[1],[2],[3]]);
+    });
+
+    _([1,2,3]).window(0).toArray(function (xs) {
+        test.same(xs, []);
+    });
+
+    _([]).window(1).toArray(function (xs) {
+        test.same(xs, []);
+    });
+
+    test.done();
+};
+
+exports['window - GeneratorStream'] = function (test) {
+    var s1 = _(function (push, next) {
+        push(null, 1);
+        setTimeout(function () {
+            push(null, 2);
+            setTimeout(function () {
+                push(null, 3);
+                push(null, _.nil);
+            }, 10);
+        }, 10);
+    });
+    s1.window(1).toArray(function (xs) {
+        test.same(xs, [[1], [2], [3]]);
+        test.done();
+    });
+}
+
 exports['parallel'] = function (test) {
     var calls = [];
     var s1 = _(function (push, next) {
